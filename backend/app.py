@@ -13,6 +13,14 @@ CORS(app)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MASKS_DIR = os.path.join(BASE_DIR, "generated_masks")
 
+# Backward-compatibility shim for ColumnTransformer in older scikit-learn pickles
+import sklearn.compose._column_transformer as _ct
+
+if not hasattr(_ct, "_RemainderColsList"):
+    class _RemainderColsList(list):
+        pass
+    _ct._RemainderColsList = _RemainderColsList
+
 text_model = joblib.load(os.path.join(BASE_DIR, "models", "text_model.pkl"))
 image_model = load_model(os.path.join(BASE_DIR, "models", "landslide.keras"))
 
