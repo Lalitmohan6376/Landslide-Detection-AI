@@ -5,5 +5,6 @@ pandas
 numpy
 joblib
 scikit-learn
+imbalanced-learn
 opencv-python-headless
 tensorflow-cpu
