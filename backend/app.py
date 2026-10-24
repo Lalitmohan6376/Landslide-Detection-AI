@@ -10,8 +10,11 @@ import cv2
 app = Flask(__name__)
 CORS(app)
 
-text_model = joblib.load("models/text_model.pkl")
-image_model = load_model("models/landslide.keras")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MASKS_DIR = os.path.join(BASE_DIR, "generated_masks")
+
+text_model = joblib.load(os.path.join(BASE_DIR, "models", "text_model.pkl"))
+image_model = load_model(os.path.join(BASE_DIR, "models", "landslide.keras"))
 
 
 @app.route("/")
@@ -74,8 +77,8 @@ def predict_image():
         result_image[mask == 1] = [0, 0, 255]
 
         # Mask image save karo
-        os.makedirs("generated_masks", exist_ok=True)
-        cv2.imwrite("generated_masks/mask.png", result_image)
+        os.makedirs(MASKS_DIR, exist_ok=True)
+        cv2.imwrite(os.path.join(MASKS_DIR, "mask.png"), result_image)
 
         return jsonify({
             "prediction": (
@@ -83,7 +86,7 @@ def predict_image():
                 if np.any(mask)
                 else "No Landslide Detected"
             ),
-            "mask_url": "http://127.0.0.1:5000/api/predict/mask"
+            "mask_url": request.host_url.rstrip("/") + "/api/predict/mask"
         }), 200
 
     except Exception:
@@ -93,7 +96,7 @@ def predict_image():
 
 @app.route("/api/predict/mask")
 def get_mask():
-    return send_from_directory("generated_masks", "mask.png")
+    return send_from_directory(MASKS_DIR, "mask.png")
 
 
 
@@ -123,4 +126,5 @@ def predict_text():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)

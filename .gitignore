@@ -1,0 +1,23 @@
+# Python
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments & OS
+.env
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Node / Frontend
+node_modules/
+dist/
+build/
+
+# Generated masks
+backend/generated_masks/
+generated_masks/
